@@ -6,9 +6,15 @@ const cors = require("cors");
 const app=express()
 
 app.use(express.json())
-app.use(cors());
+app.use(cors({
+    origin: "*"
+}));
 
-app.use(cookieParser())
+app.use(cookieParser());
+
+app.get("/", (req,res) => {
+    res.send({Message: "swagat hy apka"});
+});
 
 //routes import
 const product=require("./routes/productRoute")
