@@ -1,14 +1,13 @@
 const Product = require("../models/productModels");
 const ErrorHandler = require("../utils/errorhandler");
 const catchAsyncerror = require("../middleware/catchAsyncerror");
-const ApiFeatures = require("../utils/apifeatures");
 
 //create Product -Admin
 exports.createProduct = catchAsyncerror(async (req, res, next) => {
   req.body.user = req.user.id; //this line tell us the person id who added the products
   const product = await Product.create(req.body);
 
-  res.status(201).json({
+  res.status(201).send({
     success: true,
     product,
   });
@@ -16,19 +15,114 @@ exports.createProduct = catchAsyncerror(async (req, res, next) => {
 
 //Get All Products -User
 exports.getAllProducts = catchAsyncerror(async (req, res) => {
-  const resPerpage = 5;
   const productCount = await Product.countDocuments();
-  const apiFeatures = new ApiFeatures(Product.find(), req.query)
-    .search()
-    .filter()
-    .pagination(resPerpage);
-
-  const product = await apiFeatures.query;
-  res.status(200).json({
-    success: true,
-    product,
-    productCount,
-  });
+  const { category, q, page, limit, input, sortBy, price } = req.query;
+  const price_low = req.query.price_low;
+  const price_high = req.query.price_high;
+  
+  if (category&&price_low && price_high) {
+    let products = await Product.find({
+      $and: [{category:category}, { price: { $gte: price_low } }, { price: { $lte: price_high } }],
+    })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).send({
+      success: true,
+      products,
+    });
+  }else if (price_low && price_high) {
+    let products = await Product.find({
+      $and: [{ price: { $gte: price_low } }, { price: { $lte: price_high } }],
+    })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).send({
+      success: true,
+      products,
+    });
+  } else if (price_low) {
+    let products = await Product.find({
+      $and: [{ price: { $lt: price_low } }],
+    })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).send({
+      success: true,
+      products,
+    });
+  } else if (price_high) {
+    let products = await Product.find({
+      $and: [{ price: { $gt: price_high } }],
+    })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).send({
+      success: true,
+      products,
+    });
+  } else if (category && q) {
+    let temp = new RegExp(q, "i");
+    let products = await Product.find({
+      $and: [{ name: temp }, { category: category }],
+    })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).send({
+      success: true,
+      products,
+    });
+  } else if (category) {
+    let products = await Product.find({
+      category: category,
+    })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).send({
+      success: true,
+      products,
+    });
+  } else if ( price) {
+    if (price === "asc") {
+      let products = await Product.find()
+        .sort({
+          price: 1,
+        })
+        .skip((page - 1) * limit)
+        .limit(limit);
+      res.status(200).send({
+        success: true,
+        products,
+      });
+    } else if (price === "desc") {
+      let products = await Product.find()
+        .sort({
+          price: -1,
+        })
+        .skip((page - 1) * limit)
+        .limit(limit);
+      res.status(200).send({
+        success: true,
+        products,
+      });
+    }
+  } else if (q) {
+    const products = await Product.find({
+      name: { $regex: q, $options: "i" },
+    });
+    res.status(200).send({
+      success: true,
+      products,
+    });
+  } else {
+    let products = await Product.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).send({
+      success: true,
+      products,
+      productCount,
+    });
+  }
 });
 
 //Get Product detail -User
@@ -38,7 +132,7 @@ exports.getSingleProduct = catchAsyncerror(async (req, res) => {
   if (!product) {
     return next(new ErrorHandler("Product not found", 404));
   }
-  res.status(200).json({
+  res.status(200).send({
     success: true,
     product,
   });
@@ -49,7 +143,7 @@ exports.updateProduct = catchAsyncerror(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
   if (!product) {
     return next(new ErrorHandler("Product not found", 404));
-    // return res.status(500).json({
+    // return res.status(500)({
     //   sucess: false,
     //   message: "Product not found",
     // });
@@ -59,7 +153,7 @@ exports.updateProduct = catchAsyncerror(async (req, res, next) => {
     runValidators: true,
     useFindAndModify: false,
   });
-  return res.status(200).json({
+  return res.status(200).send({
     sucess: true,
     product,
   });
@@ -75,7 +169,7 @@ exports.deleteProduct = catchAsyncerror(async (req, res, next) => {
 
   // await Product.findByIdAndDelete(req.params.id)
   await product.remove();
-  return res.status(200).json({
+  return res.status(200).send({
     sucess: true,
     message: "Product deleted sucessfully",
   });
@@ -118,7 +212,7 @@ exports.createProductReview = catchAsyncerror(async (req, res, next) => {
 
   await product.save({ validateBeforeSave: false });
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
   });
 });
@@ -131,7 +225,7 @@ exports.getAllProductReview = catchAsyncerror(async (req, res, next) => {
     return next(new ErrorHandler("Product not found", 404));
   }
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
     reviews: product.reviews,
   });
@@ -179,8 +273,8 @@ exports.deleteProductReview = catchAsyncerror(async (req, res, next) => {
     }
   );
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
-    message:"Review deleted",
+    message: "Review deleted",
   });
 });

@@ -17,7 +17,7 @@ exports.registerUser = catchAsyncerror(async (req, res, next) => {
     },
   });
   // const token=user.getToken()
-  // res.status(201).json({
+  // res.status(201).send({
   //     success:true,
   //     // user,
   //     token
@@ -45,7 +45,7 @@ exports.loginUser = catchAsyncerror(async (req, res, next) => {
   }
 
   // const token=user.getToken()
-  // res.status(200).json({
+  // res.status(200).send({
   //     success:true,
   //     // user,
   //     token
@@ -60,7 +60,7 @@ exports.logout = catchAsyncerror(async (req, res, next) => {
     httpOnly: true,
   });
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
     message: "Logged Out",
   });
@@ -70,7 +70,7 @@ exports.logout = catchAsyncerror(async (req, res, next) => {
 exports.getUserDetails = catchAsyncerror(async (req, res, next) => {
   const user = await User.findById(req.user.id);
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
     user,
   });
@@ -104,7 +104,7 @@ exports.profileUpdate = catchAsyncerror(async (req, res, next) => {
   //we will add clodonary later
   const user = await User.findByIdAndUpdate(req.user.id, newUser);
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
   });
 });
@@ -113,7 +113,7 @@ exports.profileUpdate = catchAsyncerror(async (req, res, next) => {
 //get all user
 exports.getAllUsers = catchAsyncerror(async (req, res, next) => {
   const users = await User.find();
-  res.status(200).json({
+  res.status(200).send({
     success: true,
     users,
   });
@@ -128,7 +128,7 @@ exports.getSingleUsers = catchAsyncerror(async (req, res, next) => {
       new ErrorHandler(`User does not exist with Id: ${req.params.id}`, 401)
     );
   }
-  res.status(200).json({
+  res.status(200).send({
     success: true,
     user,
   });
@@ -147,11 +147,10 @@ exports.userRoleUpdate = catchAsyncerror(async (req, res, next) => {
       new ErrorHandler(`User does not exist with Id: ${req.params.id}`, 401)
     );
   }
-  res.status(200).json({
+  res.status(200).send({
     success: true,
   });
 });
-
 
 //Delete User
 exports.deleteUser = catchAsyncerror(async (req, res, next) => {
@@ -164,8 +163,8 @@ exports.deleteUser = catchAsyncerror(async (req, res, next) => {
   }
   await user.remove();
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
-    message:"User Deleted Successfull"
+    message: "User Deleted Successfull",
   });
 });

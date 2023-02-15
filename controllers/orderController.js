@@ -26,7 +26,7 @@ exports.newOrder = catchAsyncerror(async (req, res, next) => {
     user: req.user._id,
   });
 
-  res.status(201).json({
+  res.status(201).send({
     success: true,
     order,
   });
@@ -43,7 +43,7 @@ exports.getSingleOrder = catchAsyncerror(async (req, res, next) => {
     return next(new ErrorHandler("Order not found with this Id", 404));
   }
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
     order,
   });
@@ -53,7 +53,7 @@ exports.getSingleOrder = catchAsyncerror(async (req, res, next) => {
 exports.myOrders = catchAsyncerror(async (req, res, next) => {
   const orders = await Order.find({ user: req.user._id });
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
     orders,
   });
@@ -68,7 +68,7 @@ exports.getAllOrders = catchAsyncerror(async (req, res, next) => {
   orders.forEach((order) => {
     totalAmount += order.totalPrice;
   });
-  res.status(200).json({
+  res.status(200).send({
     success: true,
     orders,
     totalAmount,
@@ -98,7 +98,7 @@ exports.updateOrder = catchAsyncerror(async (req, res, next) => {
   }
 
   await order.save();
-  res.status(200).json({
+  res.status(200).send({
     success: true,
   });
 });
@@ -122,7 +122,7 @@ exports.deleteOrder = catchAsyncerror(async (req, res, next) => {
 
   await order.remove();
 
-  res.status(200).json({
+  res.status(200).send({
     success: true,
   });
 });
