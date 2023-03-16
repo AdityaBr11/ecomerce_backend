@@ -16,7 +16,7 @@ app.use(cors({
 app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(fileUpload())
+app.use(fileUpload({useTempFiles: true}))
 
 app.get("/", (req,res) => {
     res.send({Message: "swagat hy apka"});
