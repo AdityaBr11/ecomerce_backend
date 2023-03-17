@@ -13,7 +13,7 @@ module.exports=(err,req,res,next)=>{
     //handle the error when the already user wants to create accounts again
     //dublicate error handle
     if(err.code===11000){
-        const message=`Dublicate ${Object.keys(err.keyValue)} Entered`
+        const message=`oops ! this ${Object.keys(err.keyValue)} is already in use`
         err=new ErrorHandler(message,404)
     }
 

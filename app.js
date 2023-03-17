@@ -21,6 +21,12 @@ app.use(fileUpload())
 app.get("/", (req,res) => {
     res.send({Message: "swagat hy apka"});
 });
+// app.get('/my-route', (req, res) => {
+//     const token = req.cookies.token;
+//     console.log('Token:', token);
+//     res.send(token)
+//     // Do something with the token
+//   });
 
 //routes import
 const product=require("./routes/productRoute")

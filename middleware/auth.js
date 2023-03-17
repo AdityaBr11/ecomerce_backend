@@ -3,11 +3,13 @@ const catchAsyncerror = require("./catchAsyncerror");
 const jwt = require("jsonwebtoken");
 const dotenv=require("dotenv");
 const User = require("../models/userModels");
+const Cookies=require("js-cookie")
 
 dotenv.config()
 
 exports.isAuthancticate = catchAsyncerror(async (req, res, next) => {
-  const { token } = req.cookies;
+  const token =Cookies.get('token')
+  // const { token } = req.cookies;
   //   console.log(token);
   if (!token) {
     return next(new ErrorHandler("Please login to Access", 401));
