@@ -9,8 +9,7 @@ dotenv.config()
 
 exports.isAuthancticate = catchAsyncerror(async (req, res, next) => {
   const token =Cookies.get('token')
-  // const { token } = req.cookies;
-  //   console.log(token);
+  console.log(token,"token")
   if (!token) {
     return next(new ErrorHandler("Please login to Access", 401));
   }

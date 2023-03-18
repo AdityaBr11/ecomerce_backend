@@ -10,7 +10,8 @@ const app=express()
 app.use(express.json())
 
 app.use(cors({
-    origin: "*"
+    origin: "*",
+    credentials:true //bug fix it will helps us to access cookies from page
 }));
 
 app.use(cookieParser());
