@@ -8,7 +8,7 @@ const User = require("../models/userModels");
 dotenv.config()
 
 exports.isAuthancticate = catchAsyncerror(async (req, res, next) => {
-  const { token } = req.cookies;
+  const  token= req.headers.authorization;
   // console.log(token,"token")
   if (!token) {
     return next(new ErrorHandler("Please login to Access", 401));

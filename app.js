@@ -9,11 +9,7 @@ const app=express()
 
 app.use(express.json())
 
-app.use(cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT","PATCH", "DELETE"],
-    credentials: true, //bug fix it will helps us to access cookies from page
-}));
+app.use(cors());
 
 app.use(cookieParser());
 
